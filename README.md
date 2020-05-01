@@ -4,7 +4,7 @@
 
 The main field that evolves is relative concentration of the A phase at the mesoscale of a block copolymer, which occurs through a modified 2D Cahn Hilliard equation:
 
-<img src="https://github.com/adegenna/cahnhilliard_2d/blob/master/figs/cheqn.gif">
+<img src="https://github.com/adegenna/cahn_hilliard_2d/blob/master/figs/cheqn.gif">
 
 Domain: 2D rectangular
 
@@ -14,21 +14,21 @@ Boundary Conditions: Neumann, Dirichlet
 
 The coefficients of the CH equation are implemented as a function of polymer properties (see, e.g., `Choksi & Ren, 2003`). Some of these values have default values based on ``reasonable'' experimental ranges; others (such as macroscopic mass concentration, `m`) are operating conditions that should be user-specified.
 
-<img src="https://github.com/adegenna/cahnhilliard_2d/blob/master/figs/eps2_thermal.gif">
+<img src="https://github.com/adegenna/cahn_hilliard_2d/blob/master/figs/eps2_thermal.gif">
 
-<img src="https://github.com/adegenna/cahnhilliard_2d/blob/master/figs/sigma_thermal.gif">
+<img src="https://github.com/adegenna/cahn_hilliard_2d/blob/master/figs/sigma_thermal.gif">
 
 ## Thermal dependence
 
 Temperature is usually specified in experiment as a control, and Flory-Huggins is inversely proportional to it. Thus, in this code, the user specifies temperature as a field over the entire spatial domain, and Flory-Huggins is calculated from that:
 
-<img src="https://github.com/adegenna/cahnhilliard_2d/blob/master/figs/chi_thermal.gif">
+<img src="https://github.com/adegenna/cahn_hilliard_2d/blob/master/figs/chi_thermal.gif">
 
 ## Thermal dynamics
 
 If desired, temperature can be evolved as a spatial field through a thermal diffusion equation that is one-way coupled to the Cahn-Hilliard dynamics:
 
-<img src="https://github.com/adegenna/cahnhilliard_2d/blob/master/figs/thermal_eqn.gif">
+<img src="https://github.com/adegenna/cahn_hilliard_2d/blob/master/figs/thermal_eqn.gif">
 
 Boundary conditions: Dirichlet , Neumann
 
