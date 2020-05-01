@@ -3,7 +3,10 @@ project(ch2d)
 
 include(ExternalProject)
 
-find_package(MPI REQUIRED)
+# Set paths to external MPI library files
+
+set( MPI_LIBRARIES "~/Projects/AEOLUS/cahn_hilliard_2d/build/external/petsc/linux-gnu-c-debug/lib/libmpi.so" )
+# find_package(MPI REQUIRED)
 
 set(CMAKE_CXX_COMPILE_FLAGS ${CMAKE_CXX_COMPILE_FLAGS} ${MPI_COMPILE_FLAGS})
 set(CMAKE_CXX_LINK_FLAGS ${CMAKE_CXX_LINK_FLAGS} ${MPI_LINK_FLAGS})

@@ -1,8 +1,10 @@
-### RUN THE ACTUAL CH SOLVER
+
 export build_dir="../../build/"
+export mpiexec_petsc=${build_dir}"external/petsc/linux-gnu-c-debug/bin/mpiexec"
+
+### RUN THE ACTUAL CH SOLVER
 
 export petsc_inputfile="./petscrc.dat"
-export mpiexec_petsc="/usr/bin/mpiexec"
 export petsc_solver=${build_dir}"ch2d"
 
 echo "PETSc inputfile =" $petsc_inputfile

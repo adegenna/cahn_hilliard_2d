@@ -1,5 +1,6 @@
 
 export build_dir="../../build/"
+export mpiexec_petsc=${build_dir}"external/petsc/linux-gnu-c-debug/bin/mpiexec"
 
 ### MAKE INITIAL DATA FILES USING PYTHON SCRIPT
 
@@ -7,7 +8,6 @@ python make_input_data_files_ex1.py ${build_dir}
 
 ### RUN THE ACTUAL CH SOLVER
 
-export mpiexec_petsc="/usr/bin/mpiexec"
 export petsc_inputfile="./petscrc.dat"
 export petsc_solver=${build_dir}"ch2d"
 

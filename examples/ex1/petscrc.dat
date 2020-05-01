@@ -9,9 +9,9 @@
 
 # Initial conditions
 
--initial_temperature_file /home/adegennaro/Projects/AEOLUS/cahn_hilliard_2d/examples/ex1/initial_temperature.bin
--initial_temperature_source_file /home/adegennaro/Projects/AEOLUS/cahn_hilliard_2d/examples/ex1/initial_temperature_source.bin
--initial_soln_file /home/adegennaro/Projects/AEOLUS/cahn_hilliard_2d/examples/ex1/initial_soln.bin
+-initial_temperature_file initial_temperature.bin
+-initial_temperature_source_file initial_temperature_source.bin
+-initial_soln_file initial_soln.bin
 
 # CH parameters
 
@@ -23,8 +23,8 @@
 
 -boundary_ch dirichlet
 -boundary_thermal dirichlet
--dirichlet_bc_ch_array_file /home/adegennaro/Projects/AEOLUS/cahn_hilliard_2d/examples/ex1/dirichlet_ch.bin
--dirichlet_bc_thermal_array_file /home/adegennaro/Projects/AEOLUS/cahn_hilliard_2d/examples/ex1/dirichlet_T.bin
+-dirichlet_bc_ch_array_file dirichlet_ch.bin
+-dirichlet_bc_thermal_array_file dirichlet_T.bin
 
 # Temporal event handling
 
@@ -98,8 +98,8 @@
 # Solver monitors
 
 #-log_view :log.out
--ts_monitor_lg_snes_iterations
--ts_monitor_lg_ksp_iterations
+# -ts_monitor_lg_snes_iterations
+# -ts_monitor_lg_ksp_iterations
 # -snes_monitor
 # -ksp_monitor
 # -snes_linesearch_monitor
