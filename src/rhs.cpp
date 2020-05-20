@@ -340,6 +340,97 @@ PetscErrorCode FormRHS_thermal(TS ts,PetscReal t,Vec U,Vec F,void *ctx) {
   
 }
 
+PetscErrorCode FormRHS_CH_coupled_massdiff( TS ts , PetscReal t , Vec U , Vec F , void *ctx ) {
+
+  // Computes F = RHSfunction
+
+  AppCtx         *user = (AppCtx*)ctx;
+  DM              pack = (DM)user->pack;
+  DM              da_c , da_m;
+  DMDALocalInfo   info_c;
+  PetscScalar     **carray,**eps2,**sigma,**rhs_c;
+  Vec             local_c,local_eps2,local_sigma,local_rhs_c;
+  DMDALocalInfo   info_m;
+  PetscScalar     **marray,**rhs_m;
+  Vec             local_m,local_rhs_m;
+  Vec             U_c , U_m , F_c , F_m;
+  
+  PetscFunctionBeginUser;
+
+  // Get composite stuff
+  DMCompositeGetEntries( pack , &da_c , &da_m );
+  DMCompositeGetAccess(  pack , U     , &U_c , &U_m );
+  DMCompositeGetAccess(  pack , F     , &F_c , &F_m );
+
+  // Get CH data types
+  DMGetLocalVector( da_c , &local_c );
+  DMGetLocalVector( da_c , &local_eps2 );
+  DMGetLocalVector( da_c , &local_sigma );
+  DMGetLocalVector( da_c , &local_rhs_c );
+  
+  DMDAGetLocalInfo( da_c , &info_c );
+  
+  DMGlobalToLocalBegin( da_c , U_c , INSERT_VALUES , local_c );
+  DMGlobalToLocalEnd(   da_c , U_c , INSERT_VALUES , local_c );
+  DMGlobalToLocalBegin( da_c , F_c , INSERT_VALUES , local_rhs_c );
+  DMGlobalToLocalEnd(   da_c , F_c , INSERT_VALUES , local_rhs_c );
+  DMGlobalToLocalBegin( da_c , user->eps_2 , INSERT_VALUES , local_eps2 );
+  DMGlobalToLocalEnd(   da_c , user->eps_2 , INSERT_VALUES , local_eps2 );
+  DMGlobalToLocalBegin( da_c , user->sigma , INSERT_VALUES , local_sigma );
+  DMGlobalToLocalEnd(   da_c , user->sigma , INSERT_VALUES , local_sigma );
+  
+  DMDAVecGetArrayRead( da_c , local_c , &carray );
+  DMDAVecGetArrayRead( da_c , local_eps2 , &eps2 );
+  DMDAVecGetArrayRead( da_c , local_sigma , &sigma );
+  DMDAVecGetArray(     da_c , local_rhs_c , &rhs_c );
+
+  // Get mass-diff data types
+  DMGetLocalVector( da_m , &local_m );
+  DMGetLocalVector( da_m , &local_rhs_m );
+  
+  DMDAGetLocalInfo( da_m , &info_m );
+  
+  DMGlobalToLocalBegin( da_m , U_m , INSERT_VALUES , local_m );
+  DMGlobalToLocalEnd(   da_m , U_m , INSERT_VALUES , local_m );
+  DMGlobalToLocalBegin( da_m , F_m , INSERT_VALUES , local_rhs_m );
+  DMGlobalToLocalEnd(   da_m , F_m , INSERT_VALUES , local_rhs_m );
+  
+  DMDAVecGetArrayRead( da_m , local_m , &marray );
+  DMDAVecGetArray(     da_m , local_rhs_m , &rhs_m );
+  
+  /* Compute function over the locally owned part of the grid */
+  rhs_c       = FormLocalRHS_CH(      &info_c , carray , rhs_c , eps2 , sigma , user );
+  rhs_c       = set_boundary_values(  &info_c , rhs_c , NULL , user );
+  rhs_m       = FormLocalRHS_m(       &info_m , marray , rhs_m , user );
+  rhs_m       = set_boundary_values(  &info_m , rhs_m , NULL , user );
+
+  /* Restore vectors */
+  DMDAVecRestoreArrayRead( da_c , local_c , &carray );
+  DMDAVecRestoreArrayRead( da_c , local_eps2 , &eps2 );
+  DMDAVecRestoreArrayRead( da_c , local_sigma , &sigma );
+  DMDAVecRestoreArray(     da_c , local_rhs_c , &rhs_c );
+  DMDAVecRestoreArrayRead( da_m , local_m , &marray );
+  DMDAVecRestoreArray(     da_m , local_rhs_m , &rhs_m );
+  
+  DMLocalToGlobalBegin( da_c , local_rhs_c , INSERT_VALUES , F_c );
+  DMLocalToGlobalEnd(   da_c , local_rhs_c , INSERT_VALUES , F_c );
+  DMLocalToGlobalBegin( da_m , local_rhs_m , INSERT_VALUES , F_m );
+  DMLocalToGlobalEnd(   da_m , local_rhs_m , INSERT_VALUES , F_m );
+
+  DMCompositeRestoreAccess( pack , F , &F_c , &F_m );
+  DMCompositeRestoreAccess( pack , U , &U_c , &U_m );
+
+  DMRestoreLocalVector( da_c , &local_c );
+  DMRestoreLocalVector( da_c , &local_eps2 );
+  DMRestoreLocalVector( da_c , &local_sigma );
+  DMRestoreLocalVector( da_c , &local_rhs_c );
+  DMRestoreLocalVector( da_m , &local_m );
+  DMRestoreLocalVector( da_m , &local_rhs_m );
+  
+  PetscFunctionReturn(0);
+  
+}
+
 // Manufactured solution stuff
 
 double compute_MMStest_source_term( double x , double y , double wx , double wt , double t , double eps_2 , double sigma , double m ) {

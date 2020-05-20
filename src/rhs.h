@@ -16,6 +16,11 @@ PetscScalar** FormLocalRHS_thermal( DMDALocalInfo *info ,
                                     PetscScalar **Tsource ,
                                     AppCtx *user );
 
+PetscScalar** FormLocalRHS_massdiff( DMDALocalInfo *info ,
+				     PetscScalar **marray ,
+				     PetscScalar **rhs ,
+				     AppCtx *user );
+
 PetscScalar** set_boundary_values( DMDALocalInfo *info ,
                                    PetscScalar **uarray ,
                                    PetscScalar **u_optional ,
@@ -26,6 +31,8 @@ PetscErrorCode FormRHS_CH_coupled(TS ts,PetscReal t,Vec U,Vec F,void *ctx);
 PetscErrorCode FormRHS_CH(TS ts,PetscReal t,Vec U,Vec F,void *ctx);
 
 PetscErrorCode FormRHS_thermal(TS ts,PetscReal t,Vec U,Vec F,void *ctx);
+
+PetscErrorCode FormRHS_CH_coupled_massdiff( TS ts , PetscReal t , Vec U , Vec F , void *ctx );
 
 // Manufactured solution stuff
 

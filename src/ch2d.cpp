@@ -29,7 +29,7 @@ int main(int argc,char **argv) {
   Vec            U_c , U_T;
   Mat            J,Jmf = NULL;         /* Jacobian matrices */
   PetscErrorCode ierr;
-  DM             da_c , da_T , pack;
+  DM             da_c , da_T , pack , pack_cAndm;
   PetscReal      dt;
 
   AppCtx         user = parse_petsc_options();
@@ -166,6 +166,16 @@ int main(int argc,char **argv) {
     U_user  = u;
     r_user  = r;
     rhsFunctionExplicit = FormRHS_CH_coupled;
+    
+  }
+
+  else if (user.physics.compare("coupled_ch_massdiff") == 0) {
+    // Coupled CH + mass concentration diffusion
+
+    da_user = pack_cAndm;
+    U_user  = U_cAndm;
+    r_user  = r_cAndm;
+    rhsFunctionExplicit = FormRHS_CH_coupled_massdiff;
     
   }
 
