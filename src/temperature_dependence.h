@@ -27,5 +27,6 @@ double compute_sigma_from_chparams( const double X ,
 
 PetscErrorCode compute_eps2_and_sigma_from_temperature( void *ctx , Vec U );
 
+PetscErrorCode compute_eps2_and_sigma_from_temperature_and_massconcentration( void *ctx , Vec U );
 
 #endif

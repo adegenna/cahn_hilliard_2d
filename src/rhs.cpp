@@ -194,6 +194,43 @@ PetscScalar** FormLocalRHS_thermal( DMDALocalInfo *info ,
   
 }
 
+PetscScalar** FormLocalRHS_massdiff( DMDALocalInfo *info ,
+				     PetscScalar **marray ,
+				     PetscScalar **rhs ,
+				     AppCtx *user ) {
+
+  // Function to evaluate RHS of mass-concentration dynamics for a given local process
+  // Output: rhs array, containing RHS evaluations on local process
+
+  // NOTE: these CH eqns are dimensionless with domain length scale = 1. Physical domain size shows up in L_omega.
+  PetscScalar hx = 1.0 / (PetscReal)(info->mx-1);
+  PetscScalar sx = 1.0 / (hx*hx);
+  PetscScalar hy = 1.0 / (PetscReal)(info->my-1);
+  PetscScalar sy = 1.0 / (hy*hy);
+  
+  /* Compute function over the locally owned part of the grid */
+  for (int j=info->ys; j<info->ys+info->ym; j++) {
+    for (int i=info->xs; i<info->xs+info->xm; i++) {
+      
+      // dm/dt = D_m * laplacian( m )
+      
+      PetscScalar dxx     = sx * ( marray[j][i+1] + marray[j][i-1] - 2.0 * marray[j][i] );
+      PetscScalar dyy     = sy * ( marray[j+1][i] + marray[j-1][i] - 2.0 * marray[j][i] );
+      
+      rhs[j][i]           = user->D_m * ( dxx + dyy );
+      
+      // Boundary conditions
+      if ( i <= 1 || j <= 1 || i >= (info->mx-2) || j >= (info->my-2) )
+        rhs[j][i] = 0.0;
+      
+    }
+    
+  }
+  
+  return rhs;
+  
+}
+
 PetscErrorCode FormRHS_CH_coupled(TS ts,PetscReal t,Vec U,Vec F,void *ctx) {
 
   // Computes F = RHSfunction
@@ -399,10 +436,10 @@ PetscErrorCode FormRHS_CH_coupled_massdiff( TS ts , PetscReal t , Vec U , Vec F 
   DMDAVecGetArray(     da_m , local_rhs_m , &rhs_m );
   
   /* Compute function over the locally owned part of the grid */
-  rhs_c       = FormLocalRHS_CH(      &info_c , carray , rhs_c , eps2 , sigma , user );
-  rhs_c       = set_boundary_values(  &info_c , rhs_c , NULL , user );
-  rhs_m       = FormLocalRHS_m(       &info_m , marray , rhs_m , user );
-  rhs_m       = set_boundary_values(  &info_m , rhs_m , NULL , user );
+  rhs_c       = FormLocalRHS_CH(       &info_c , carray , rhs_c , eps2 , sigma , user );
+  rhs_c       = set_boundary_values(   &info_c , rhs_c , NULL , user );
+  rhs_m       = FormLocalRHS_massdiff( &info_m , marray , rhs_m , user );
+  rhs_m       = set_boundary_values(   &info_m , rhs_m , NULL , user );
 
   /* Restore vectors */
   DMDAVecRestoreArrayRead( da_c , local_c , &carray );
