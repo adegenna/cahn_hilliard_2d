@@ -106,8 +106,11 @@ PetscErrorCode compute_eps2_and_sigma_from_temperature( void *ctx , Vec U ) {
 						      user->L_omega ,
 						      user->N );
 
-      eps2array[j][i]   = std::min( std::max( eps2array[j][i]  , user->eps2_min )   , user->eps2_max );
-      sigmaarray[j][i]  = std::min( std::max( sigmaarray[j][i] , user->sigma_min )  , user->sigma_max );
+      //eps2array[j][i]   = std::min( std::max( eps2array[j][i]  , user->eps2_min )   , user->eps2_max );
+      //sigmaarray[j][i]  = std::min( std::max( sigmaarray[j][i] , user->sigma_min )  , user->sigma_max );
+      
+      eps2array[j][i]   = std::max( eps2array[j][i]  , 1e-7 );
+      sigmaarray[j][i]  = std::max( sigmaarray[j][i] , 1e-7 );
       
     }
   }
