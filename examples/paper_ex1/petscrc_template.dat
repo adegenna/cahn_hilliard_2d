@@ -36,7 +36,7 @@
 # Temporal scheme
 
 -temporal_scheme explicit
--t_final 1.2
+-t_final 1.201
 -dt 0.00001
 -ts_adapt_type basic
 
